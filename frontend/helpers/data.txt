@@ -1,0 +1,6 @@
+
+             ['username', 'required', 'message' => 'please enter your username ... '] ,
+             ['username', 'string', 'max' => '20', 'min' => '6'] ,
+             ['email', 'required', 'message' => 'please enter your email ... '] ,
+             ['email', 'email', 'min' => '10', 'max' => '30'] ,
+        

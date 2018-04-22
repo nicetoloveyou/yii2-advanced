@@ -1,0 +1,9 @@
+array (
+  0 => 
+  array (
+    0 => 'username',
+    1 => 'string',
+    'max' => 100,
+    'message' => 'cantt nod dod',
+  ),
+)
