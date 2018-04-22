@@ -1,0 +1,18 @@
+@CHARSET "UTF-8";
+
+/**
+ * 自定义css 非框架系统所带
+ */
+
+
+
+.btn-common {
+    background-color: #337ab7;
+    border-color: #337ab7;
+    color: #FFFFFF;
+}
+
+.btn-common:hover, .btn-common:selected, .btn-common:focus { color: #FFFFFF; }
+#create { color: #FFFFFF; }
+
+a { text-decoration: none; }
