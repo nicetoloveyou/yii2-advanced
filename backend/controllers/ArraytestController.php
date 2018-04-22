@@ -54,7 +54,7 @@ class ArraytestController extends yii\web\Controller
             ['id' => 10, 'pid' => 4, 'label' => 'shouer'],
 
             //'id' => 100,
-            'pid' => 1111
+            //'pid' => 1111
         ];
 //        $tree = Helper::toTree($array);
 //        $value = ArrayHelper::getValue($array, function($array){
@@ -92,9 +92,11 @@ class ArraytestController extends yii\web\Controller
 //
 //        $isIn = ArrayHelper::isIn($subArray, $array);
 
-        $left = ArrayHelper::filter($array, ['!pid']);
+//        $left = ArrayHelper::filter($array, ['!pid']);
 
-        Dump::dump($left);
+        $tree = \helpers\Helper_Array::array2tree($array, 'id', 'pid');
+
+        Dump::dump($tree);
     }
 
 
