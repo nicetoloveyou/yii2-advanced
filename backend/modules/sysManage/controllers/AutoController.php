@@ -35,7 +35,12 @@ class AutoController extends RouteController
      */
     public function actionMakeItems()
     {
-        $routes = $this->getAppRoutes();
+        // $routes = $this->getAppRoutes();
+
+        $routes = $this->getAppAllRoutes();
+
+        Dump::dump($routes);
+
         // Dump::dump($routes);
         foreach ($routes as $key => $route) {
             // if is module
@@ -136,7 +141,7 @@ class AutoController extends RouteController
      * Get list of application routes
      * @return array
      */
-    public function getAppRoutes()
+    public function getAppAllRoutes()
     {
         $result = [];
         $this->getRouteRecrusive(Yii::$app, $result);
@@ -274,7 +279,7 @@ class AutoController extends RouteController
 
     public function actionDelete()
     {
-        
+
     }
 
 }
