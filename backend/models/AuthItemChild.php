@@ -9,6 +9,7 @@ use Yii;
  *
  * @property string $parent
  * @property string $child
+ * @property integer $auth_type
  *
  * @property AuthItem $parent0
  * @property AuthItem $child0
@@ -30,6 +31,7 @@ class AuthItemChild extends \yii\db\ActiveRecord
     {
         return [
             [['parent', 'child'], 'required'],
+            [['auth_type'], 'integer'],
             [['parent', 'child'], 'string', 'max' => 64],
             [['parent'], 'exist', 'skipOnError' => true, 'targetClass' => AuthItem::className(), 'targetAttribute' => ['parent' => 'name']],
             [['child'], 'exist', 'skipOnError' => true, 'targetClass' => AuthItem::className(), 'targetAttribute' => ['child' => 'name']],
@@ -44,6 +46,7 @@ class AuthItemChild extends \yii\db\ActiveRecord
         return [
             'parent' => 'Parent',
             'child' => 'Child',
+            'auth_type' => 'Auth Type',
         ];
     }
 

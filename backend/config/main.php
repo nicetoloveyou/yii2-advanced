@@ -100,6 +100,7 @@ return [
             'menu/*',
             'test/*',
             'arraytest/*',
+            'admin/*',
             'admin/auto/*',
             'sysManage/*'
 //            'admin/*',

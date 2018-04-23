@@ -33,6 +33,20 @@ class Helper
     }
 
     /**
+     * @param $object
+     * @param string $key
+     * @return string
+     */
+    public static function getComment($object, $key = 'description')
+    {
+        $comment = $object->getDocComment();
+        $comment = Helper::DocParser($comment);
+
+        return ($comment[$key]) ?? '';
+    }
+
+
+    /**
      * 生成树形结构：数组必须带有索引主键
      *
      * @param array $items
