@@ -172,9 +172,59 @@ class Helper
         return '';
     }
 
+    /**
+     * 查找祖宗
+     *
+     * @param array $ItemChild
+     * @param string $child
+     * @return array
+     */
+    public static function searchParents(array $ItemChild, string $value)
+    {
+        $parents = [];
+        $parent = self::searchParent($ItemChild, $value);
+        if($parent != '') {
+            //$parents[] = $parent;
+            //self::searchParents($ItemChild, $parent);
 
+            $parents[$parent] = self::searchParents($ItemChild, $parent);
 
+        }
 
+        return $parents;
+    }
+
+    public static function reserveArray($array)
+    {
+        static $newArray = [];
+        foreach($array as $key=>$val)
+        {
+            if(is_array($val) && !empty($val)) {
+                //array_unshift($newArray, $val);
+                $keys = array_keys($val);
+                $parent = !empty($keys[0]) ? $keys[0] : '';
+                $newArray[$key] = ['parent' => $parent, 'child' => $key];
+
+                self::reserveArray($val);
+            }
+            else {
+                $newArray[$key] = ['parent' => '', 'child' => $key];
+            }
+        }
+
+        return array_reverse($newArray);
+    }
+
+    public static function reverse($arr)
+    {
+        $temp = [];
+        end($arr);
+        while (($value = current($arr)) != null) {
+            $temp[key($arr)] = $value;
+            prev($arr);
+        }
+        return $temp;
+    }
 
 
 

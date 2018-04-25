@@ -7,6 +7,7 @@
  */
 
 namespace backend\controllers;
+use backend\models\AuthItemChild;
 use yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
@@ -94,9 +95,39 @@ class ArraytestController extends yii\web\Controller
 
 //        $left = ArrayHelper::filter($array, ['!pid']);
 
-        $tree = \helpers\Helper_Array::array2tree($array, 'id', 'pid');
+//        $tree = \helpers\Helper_Array::array2tree($array, 'id', 'pid');
 
-        Dump::dump($tree);
+//        $class = new \ReflectionClass('backend\models\Menu');
+//        $comment = $class->getDocComment();
+//        $comment = Helper::DocParser($comment);
+//        //$comment = str_replace(['*', '/', '\\'], '', $comment);
+//        //$comment = nl2br($comment);
+//        //$arr = explode('<br />', $comment);
+//
+//        var_dump($comment);
+
+        $child = '/admin/role/update';
+
+        //$ItemChild = AuthItemChild::find()->asArray()->all();
+
+        $ItemChild = [
+            ['parent' => '系统管理', 'child' => '角色管理'],
+            ['parent' => '角色管理', 'child' => '角色列表'],
+            ['parent' => '角色列表', 'child' => '角色添加'],
+            ['parent' => '角色添加', 'child' => '/admin/role/update'],
+        ];
+
+        $parents = Helper::searchParents($ItemChild, $child);
+
+        $res = Helper::reserveArray($parents);
+
+        Dump::dump($parents);
+
+        Dump::dump($res);
+
+
+
+
     }
 
 

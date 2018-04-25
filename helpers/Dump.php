@@ -18,7 +18,7 @@ class Dump
     {
         VarDumper::dump($var, $depth, $highlight);
 
-        die();
+        // die();
     }
 
 
