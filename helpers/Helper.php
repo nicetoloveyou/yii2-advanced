@@ -227,7 +227,27 @@ class Helper
     }
 
 
-
+    // @see http://www.jb51.net/article/104454.htm
+    function dirList($dir)
+    {
+        $files = [];
+        if(is_dir($dir)){
+            if(($dh=opendir($dir)) !== false){
+                while(($rd=readdir($dh)) !== false){
+                    if($rd != '..' && $rd != '.'){
+                        if(is_dir($dir."/".$rd)){
+                            $files[$rd] = dirlist($dir."/".$rd);
+                        }
+                        else{
+                            $files[] = $rd;
+                        }
+                    }
+                }
+            }
+            closedir($dh);
+        }
+        return $files;
+    }
 
 
 
