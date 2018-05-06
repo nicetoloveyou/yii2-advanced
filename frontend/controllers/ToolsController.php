@@ -30,7 +30,11 @@ class ToolsController extends \yii\web\Controller
      */
     public function actionSearch()
     {
+
+
+        die();
         echo Yii::getVersion();
+
         // exit;
         $orderBy = ['id' => SORT_DESC, 'status'=> SORT_ASC];
         // $condition = ['id' => ':id', 'status' => ':status']; // 不支持数组形式
@@ -72,12 +76,14 @@ class ToolsController extends \yii\web\Controller
     public static function parseCondition($string)
     {
         $string = '&id=100?usename=aaaa';
+
     }
     
     
     public function actionTestObject()
     {
         $car = new Car(10000, 20);
+        $car->price = 1;
         //$car->card= 1010088;
         VarDumper::dump(empty($car->price), 9, true);
         
@@ -161,7 +167,7 @@ class ToolsController extends \yii\web\Controller
                         'allow' => true,
                         //`?`: matches a guest user (not authenticated yet)
                         //* - `@`: matches an authenticated user
-                        //'roles' => ['*'],
+                        //'roles' => [], // all
                     ],
                     [
                         'actions' => ['local'], 
@@ -223,6 +229,8 @@ class ToolsController extends \yii\web\Controller
      */
     public function actionLocal($id)
     {
+        $arr = ['a'=>'b'];
+        var_dump(each($arr)); die();
         list($a, $b) = ['aaaaa', 'bbbbbb'];
         //var_dump($a,$b);
         
@@ -565,7 +573,9 @@ class ToolsController extends \yii\web\Controller
      */
     public function actionProvider()
     {
-    
+        // ActiveProvider
+        // SqlDataProvider
+        // ArrayProvider
     }
     /**
      * Widgets 数据小部件使用：ListView DetailView GridView
@@ -692,7 +702,7 @@ class ToolsController extends \yii\web\Controller
         //$query = new \yii\db\Query();
         //$data = $query->select('*')->from('user')->where('id=1')->limit(1)->createCommand()->queryAll();
         //var_dump($data);exit;
-        $message = '<div>Hello</div>';
+        $message = '<div>Hello World</div>';
         $model = \app\models\TestUser::findOne(['id' => 1]); //当大量查询时 用->asArray() 降低消耗时间
 //         $a = ['config' => ['db' => 'mysql', 'host' => 'localhost']];
 //         $b = ['config' => ['user' => 'root']];

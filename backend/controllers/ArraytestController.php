@@ -8,9 +8,11 @@
 
 namespace backend\controllers;
 use backend\models\AuthItemChild;
+use backend\models\AuthItem;
 use yii;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
+use yii\helpers\StringHelper;
 use helpers\Helper;
 use helpers\Dump;
 
@@ -23,32 +25,31 @@ class ArraytestController extends yii\web\Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => ['index'],
-                        'allow' => true,
-                        'roles' => ['@', '?'],
-                    ],
-                ],
-            ]
+//            'access' => [
+//                'class' => AccessControl::className(),
+//                'rules' => [
+//                    [
+//                        'actions' => ['index'],
+//                        'allow' => true,
+//                        'roles' => ['@', '?'],
+//                    ],
+//                ],
+//            ]
         ];
     }
-
 
     public function actionIndex()
     {
         $array = [
-            ['id' => 999, 'pid' => 0, 'label' => 'Dong'],
+            999=>  ['id' => 999, 'pid' => 0, 'label' => 'Dong'],
             ['id' => 100, 'pid' => 0, 'label' => 'Dong'],
 
-            ['id' => 1, 'pid' => 0, 'label' => 'china'],
+           1=> ['id' => 1, 'pid' => 0, 'label' => 'china'],
             ['id' => 2, 'pid' => 0, 'label' => 'us'],
             ['id' => 3, 'pid' => 0, 'label' => 'as'],
             ['id' => 4, 'pid' => 0, 'label' => 'kr'],
 
-            ['id' => 5, 'pid' => 1, 'label' => 'chengdu'],
+           5=> ['id' => 5, 'pid' => 1, 'label' => 'chengdu'],
             ['id' => 7, 'pid' => 1, 'label' => 'Chongqing'],
             ['id' => 8, 'pid' => 2, 'label' => 'lal'],
             ['id' => 9, 'pid' => 3, 'label' => 'xini'],
@@ -106,34 +107,53 @@ class ArraytestController extends yii\web\Controller
 //
 //        var_dump($comment);
 
-        $child = '/admin/role/update';
+//        $child = '/admin/role/update';
+//
+//        //$ItemChild = AuthItemChild::find()->asArray()->all();
+//
+//        $ItemChild = [
+//            ['parent' => '系统管理', 'child' => '角色管理'],
+//            ['parent' => '角色管理', 'child' => '角色列表'],
+//            ['parent' => '角色列表', 'child' => '角色添加'],
+//            ['parent' => '角色添加', 'child' => '/admin/role/update'],
+//        ];
 
-        //$ItemChild = AuthItemChild::find()->asArray()->all();
-
-        $ItemChild = [
-            ['parent' => '系统管理', 'child' => '角色管理'],
-            ['parent' => '角色管理', 'child' => '角色列表'],
-            ['parent' => '角色列表', 'child' => '角色添加'],
-            ['parent' => '角色添加', 'child' => '/admin/role/update'],
-        ];
-
-        $parents = Helper::searchParents($ItemChild, $child);
-
-        $res = Helper::reserveArray($parents);
-
-        Dump::dump($parents);
-
-        Dump::dump($res);
-
-
+//        $parents = Helper::searchParents($ItemChild, '/admin/role/update');
+//
+//        $res = Helper::reserveArray($parents);
+//
+//        Dump::dump($parents);
+//
+//        Dump::dump($res);
 
 
     }
 
+    public function actionModel()
+    {
+        $model = AuthItem::find()->where(['name' => 'Admin'])->with('authAssignments')->asArray()->one();
+
+        // 获取所有children
+        // Dump::dump(count($model->getAuthItemChildren()->asArray()->all()));
+
+        // Dump::dump(($model->getChildren()->asArray()->all()));
+
+        Dump::dump($model);
+
+    }
 
 
+    public function actionString()
+    {
+        $string = '*admin*';
 
+        $startWith = StringHelper::startsWith($string, '*');
+        $endWith = StringHelper::startsWith($string, '*');
 
+        var_dump($startWith);
+
+        var_dump($endWith);
+    }
 
 
 

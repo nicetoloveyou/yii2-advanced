@@ -21,7 +21,8 @@
         "yiisoft/yii2-jui": "^2.0@dev",
         "yiisoft/yii2-elasticsearch": "^2.0@dev",
         "yiisoft/yii2-httpclient": "^2.0@dev",
-        "yiisoft/yii2-redis": "^2.0@dev"
+        "yiisoft/yii2-redis": "^2.0@dev",
+        "yiisoft/yii2-mongodb": "^2.1@dev"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
@@ -46,5 +47,11 @@
             "name": "刘李鹏",
             "email": "liu.lipeng@icloud.com"
         }
-    ]
+    ],
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    }
 }

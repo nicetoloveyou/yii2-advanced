@@ -55,7 +55,7 @@ return [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'trace'], // 'warning', 'trace', 'info' , 'profile'
+                    'levels' => ['error', 'trace', 'profile'], // 'warning', 'trace', 'info' , 'profile'
 //                     'categories' => [
 //                         'yii\db\*',
 //                         'yii\web\HttpException:*',

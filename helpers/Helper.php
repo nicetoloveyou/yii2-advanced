@@ -181,14 +181,13 @@ class Helper
      */
     public static function searchParents(array $ItemChild, string $value)
     {
-        $parents = [];
+        static $parents = [];
         $parent = self::searchParent($ItemChild, $value);
         if($parent != '') {
-            //$parents[] = $parent;
-            //self::searchParents($ItemChild, $parent);
+            $parents[] = $parent;
+            self::searchParents($ItemChild, $parent);
 
-            $parents[$parent] = self::searchParents($ItemChild, $parent);
-
+            //$parents[$parent] = self::searchParents($ItemChild, $parent);
         }
 
         return $parents;

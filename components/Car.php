@@ -12,11 +12,11 @@ class Car extends Object
 {
     protected $card;
     
-    private $price;
+    public $price;
     
     public function __construct($card, $price){
         $this->card = $card;
-        $this->price = $price;
+        // $this->price = $price;
     }
     /**
      * 

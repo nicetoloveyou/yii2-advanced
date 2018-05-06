@@ -17,8 +17,8 @@ class Customer extends ActiveRecord
      * @var UploadedFile
      */
     public $imageFile;
-    
-    
+
+
     /**
      * 主键 默认为 id
      *
