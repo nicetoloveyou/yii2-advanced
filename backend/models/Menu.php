@@ -81,7 +81,9 @@ class Menu extends \yii\db\ActiveRecord
         return $this->hasMany(Menu::className(), ['parent' => 'id']);
     }
 
-
+    /**
+     * 后置取出：可以对属性进行处理
+     */
     public function afterFind()
     {
         parent::afterFind();
