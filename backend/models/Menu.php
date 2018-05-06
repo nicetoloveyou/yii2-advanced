@@ -80,4 +80,14 @@ class Menu extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Menu::className(), ['parent' => 'id']);
     }
+
+
+    public function afterFind()
+    {
+        parent::afterFind();
+        $this->data = $this->data . ' after find';
+    }
+
+
+
 }
