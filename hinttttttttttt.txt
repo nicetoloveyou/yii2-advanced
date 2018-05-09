@@ -1,0 +1,6 @@
+
+# yii2 的一些注意事项以及坑
+
+Yii::$app->end();
+
+调用整个方法需要谨慎，如果调用整个方法或者在方法中调用die() exit 之类的函数，会使 controller 的afterAction 或者 AccessControl的afterAction 失效
