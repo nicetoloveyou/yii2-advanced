@@ -55,23 +55,14 @@ class RedistestController extends Controller
         var_dump($model->data);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public function actions()
+    {
+        return [
+            'hi' => [
+                'class' => 'backend\components\Shareactions'
+            ],
+        ];
+    }
 
 
 }

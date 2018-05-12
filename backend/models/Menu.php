@@ -87,7 +87,7 @@ class Menu extends \yii\db\ActiveRecord
     public function afterFind()
     {
         parent::afterFind();
-        $this->data = $this->data . ' after find';
+        $this->data = $this->data . ' ... after find set sth';
     }
 
 

@@ -7,7 +7,7 @@
  * Time: 10:27
  */
 
-namespace app\modules\cron\controllers;
+namespace console\controllers;
 
 use yii\Console\Controller;
 use Yii;

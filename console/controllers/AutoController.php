@@ -2,22 +2,65 @@
 
 namespace console\controllers;
 
-use yii;
+use Yii;
 use yii\helpers\Console;
-use yii\db\SchemaBuilderTrait;
+use yii\helpers\VarDumper;
 use yii\db\Migration;
+use yii\console\ExitCode;
 
 class AutoController extends \yii\console\Controller
 {
 
 
+    public $color = false;
+
     public function actionIndex()
     {
-        // return $this->render('index');
-        echo 'Welcome auto console ';
+        fwrite(\STDOUT, "What's your problem ? \n");
+        while ($str = fread(\STDIN, 1000)){
+            // quit or exit
+            $enter = trim($str);
+            if (in_array($enter, ['quit', 'exit'])) {
+                if ($this->confirm("Are you sure to quit ? \n")) {
+                    echo "You had quit ... done \n";
+                    return ExitCode::OK;
+                }
+            }
+            else {
+                echo "Your enter is __ {$str} \n";
+            }
+        }
     }
-    
-     public function actionBackup($path, $deepth = 1)
+
+    public $time = 1;
+    public $config;
+    public $dbName;
+
+    public function options($actionID)
+    {
+        //return parent::options($actionID);
+        return ['time', 'config', 'dbName'];
+    }
+
+    public function actionUsed()
+    {
+        // echo $this->ansiFormat('This will be red and underlined.', Console::FG_RED, Console::UNDERLINE);
+        // $this->stdout("Hello");
+        //$this->stderr("error");
+        // $prompt = $this->prompt("Please enter your ID: ", ['required' => true]);
+        //$this->select('select one', ['yes', 'no']);
+        //echo "Your id is is $prompt";
+
+        VarDumper::dump($this->getRoute());
+    }
+
+    /**
+     * backup something
+     *
+     * @param $path
+     * @param int $deepth
+     */
+    public function actionBackup($path, $deepth = 1)
      {
          echo $path .'----'. $deepth . "\n";
          echo Console::moveCursorUp();
