@@ -54,6 +54,18 @@ class AutoController extends \yii\console\Controller
         VarDumper::dump($this->getRoute());
     }
 
+    public function actionProgress()
+    {
+        Console::startProgress(0, 1000);
+        for ($n = 1; $n <= 1000; $n++)
+        {
+            usleep(1000);
+            Console::updateProgress($n, 1000);
+        }
+        Console::endProgress();
+    }
+
+
     /**
      * backup something
      *

@@ -10,13 +10,21 @@ namespace backend\controllers;
 
 use yii;
 use yii\web\Controller;
+use yii\helpers\VarDumper;
+use helpers\Dump;
 
 class RedistestController extends Controller
 {
 
+    public function actionSet()
+    {
+        Dump::dump(Yii::$app->redis);
+    }
+
+    // ----------------------------------------------------
+
     public function actionIndex()
     {
-
         var_dump(Yii::$app->getTimeZone());
         var_dump(date('Y-m-d H:i:s', time()));
 
@@ -52,9 +60,16 @@ class RedistestController extends Controller
         //$model = new \backend\models\Menu();
         $model =  \backend\models\Menu::find()->one();
 
-        var_dump($model->data);
+        // var_dump($model->data);
+
+        VarDumper::dump($this->getUniqueId(), 1000, true);
     }
 
+    /**
+     * actions map
+     *
+     * @return array
+     */
     public function actions()
     {
         return [
@@ -63,6 +78,12 @@ class RedistestController extends Controller
             ],
         ];
     }
+
+
+
+
+
+
 
 
 }

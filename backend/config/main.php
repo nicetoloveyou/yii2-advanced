@@ -32,7 +32,13 @@ return [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    'levels' => ['error', 'warning', 'profile'],
+                ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['error', 'warning', 'profile'],
+                    'categories' => ['mongodb'],
+                    'logFile' => '@runtime/logs/mongodb.log',
                 ],
             ],
         ],
