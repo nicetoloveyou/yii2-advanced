@@ -31,7 +31,26 @@ class GenStringHelper
         return $str;
     }
 
+    /**
+     * 生成账号
+     *
+     * @return int|mixed|string
+     */
+    public static function generateAdmin()
+    {
+        $letter = 'A';
+        // $max = Channel::find()->max('admin');
+        $max = Channel::find()->select("max(admin)")->where(" BINARY admin Like '$letter%' ")->scalar();
+        if ($max){
+            $max = ((int) ltrim($max, $letter)) + 1;
+            $max = $letter. $max;
+        }
+        else {
+            $max = "A666001";
+        }
 
+        return $max;
+    }
 
 
 
