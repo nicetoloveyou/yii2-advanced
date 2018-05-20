@@ -33,12 +33,15 @@ return [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning', 'profile'],
+                    'categories' => ['application'],
+                    'logVars' => ['*'] // do not log $_SERVER $_POST
                 ],
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning', 'profile'],
                     'categories' => ['mongodb'],
                     'logFile' => '@runtime/logs/mongodb.log',
+                    'logVars' => ['*'],
                 ],
             ],
         ],

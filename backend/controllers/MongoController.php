@@ -12,7 +12,7 @@ use Yii;
 use yii\web\Controller;
 use helpers\Dump;
 use backend\models\AuthItem;
-
+use yii\mongodb\Connection;
 
 class MongoController extends Controller
 {
@@ -21,13 +21,17 @@ class MongoController extends Controller
     {
         //Dump::dump(Yii::$app->mongodb);
         //echo 'hello';
-        Yii::beginProfile('begin', 'mongodb');
-        $item = AuthItem::find()->select('*')->asArray()->one();
+        //Yii::beginProfile('begin', 'mongodb');
+        //$item = AuthItem::find()->select('*')->asArray()->one();
+        //Yii::endProfile('end', 'mongodb');
 
-        var_dump($item);
+        Dump::dump(Yii::$app->mongodb);
+
+        //$dsn = 'mongodb://@localhost:27017/local';
+        //$connection = new Connection(['dsn' => $dsn]);
 
 
-        Yii::endProfile('end', 'mongodb');
+
     }
 
 
