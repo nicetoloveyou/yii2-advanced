@@ -4,3 +4,8 @@
 Yii::$app->end();
 
 调用整个方法需要谨慎，如果调用整个方法或者在方法中调用die() exit 之类的函数，会使 controller 的afterAction 或者 AccessControl的afterAction 失效
+
+# rbac 的小问题
+
+今天遇到一个问题，但不好找到bug，就是auth_item_child，如果 child表里面的parent和child相同那么，通过manage->getPermission的时候一直卡在那，也不报错，无法找到错误原因，后来从表里面看到 一条信息 parent 和 child 一样，删除他就正常了，真是无语！按理说 也不应该 把parent 和 child 设置成相同，但是是程序自动生成权限的所以不好察觉！
+
