@@ -42,7 +42,7 @@ class Helper
         $comment = $object->getDocComment();
         $comment = Helper::DocParser($comment);
 
-        return ($comment[$key]) ?? '';
+        return ($comment[$key]) ?? ($comment['long_description'] ?? '');
     }
 
 

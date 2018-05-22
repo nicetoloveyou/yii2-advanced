@@ -16,6 +16,9 @@ use helpers\Dump;
 class TestController extends Controller
 {
 
+    /**
+     * 测试而已
+     */
     public function actionIndex()
     {
         // $user = AdminModel::findByUsername('admin');
