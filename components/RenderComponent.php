@@ -78,7 +78,7 @@ class RenderComponent extends Component
             if ($pk != null && is_array($pk)) {
                 $pk_id = $pk[0];
                 // if set primary key and value then to update model.
-                if (!empty($param[$pk_id]) && !empty($param[$pk_id])) {
+                if (!empty($pk_id) && !empty($param[$pk_id])) {
                     $pk_value = $param[$pk_id];
                     $model = $queryParams['className']::find()->where("{$pk_id} = :{$pk_id}", [":{$pk_id}" => $pk_value])->one();
                 } // or add new record .

@@ -7,6 +7,7 @@ use yii\helpers\Console;
 use yii\helpers\VarDumper;
 use yii\db\Migration;
 use yii\console\ExitCode;
+use helpers\Helper;
 
 class AutoController extends \yii\console\Controller
 {
@@ -105,7 +106,16 @@ class AutoController extends \yii\console\Controller
          var_dump($result);exit;
      }
 
+    public function actionHua()
+    {
 
+        $className = 'backend\controllers\TestController';
+        $class = new \ReflectionClass($className);
+        $method = $class->getMethod('actionIndex');
+        $comment = Helper::getComment($method);
+
+        var_dump($comment); die();
+    }
 
 
 
