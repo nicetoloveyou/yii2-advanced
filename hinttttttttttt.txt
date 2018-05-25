@@ -9,3 +9,8 @@ Yii::$app->end();
 
 今天遇到一个问题，但不好找到bug，就是auth_item_child，如果 child表里面的parent和child相同那么，通过manage->getPermission的时候一直卡在那，也不报错，无法找到错误原因，后来从表里面看到 一条信息 parent 和 child 一样，删除他就正常了，真是无语！按理说 也不应该 把parent 和 child 设置成相同，但是是程序自动生成权限的所以不好察觉！
 
+# console 问题
+
+如果在yii\web\Application 也就是非控制台模式下定义了引入一些组件，而console下没有定义，如果在控制台下用反射 ReflectionClass Web 应用的控制器时候
+
+console 会报错，所以如果要避免这种错误，应该console 和 web 都要配置，而今天自动扫描生成路由的时候没有打断点而是写入日志，造成找bug找了半天。
