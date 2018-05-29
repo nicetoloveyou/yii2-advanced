@@ -8,6 +8,7 @@ use yii\helpers\VarDumper;
 use yii\db\Migration;
 use yii\console\ExitCode;
 use helpers\Helper;
+use yii\mongodb\Connection;
 
 class AutoController extends \yii\console\Controller
 {
@@ -110,11 +111,32 @@ class AutoController extends \yii\console\Controller
     {
 
         $className = 'backend\controllers\TestController';
-        $class = new \ReflectionClass($className);
-        $method = $class->getMethod('actionIndex');
-        $comment = Helper::getComment($method);
+//        $class = new \ReflectionClass($className);
+//        $method = $class->getMethod('actionIndex');
+//        $comment = Helper::getComment($method);
 
-        var_dump($comment); die();
+//        $className = 'backend\components\CenterComponent';
+//        $class = new \ReflectionClass(new $className);
+//        //var_dump(strlen('Controller')); die();
+//        $method = $class->getMethod('hello');
+//        $comment = Helper::getComment($method);
+//        //echo Yii::getVersion();
+//        var_dump($comment); die();
+
+
+
+        //$dsn = 'mongodb://root:root@localhost:27017/admin';
+        //$connection = new Connection(['dsn' => $dsn]);
+        //var_dump($connection);die();
+        //$result = $connection->getDatabase('admin')->getCollection('articles')->findOne();
+
+        $result = Yii::$app->mongodb->getDatabase('admin')->getCollection('articles')->findOne();
+
+
+        var_dump($result);
+
+        // ok
+
     }
 
 

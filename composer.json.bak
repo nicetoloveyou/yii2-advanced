@@ -22,7 +22,7 @@
         "yiisoft/yii2-elasticsearch": "^2.0@dev",
         "yiisoft/yii2-httpclient": "^2.0@dev",
         "yiisoft/yii2-redis": "^2.0@dev",
-        "yiisoft/yii2-mongodb": "*"
+        "yiisoft/yii2-mongodb": "^2.1@dev"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

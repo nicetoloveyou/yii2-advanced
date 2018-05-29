@@ -23,6 +23,9 @@ return [
         ],
     ],
     'components' => [
+        'center' => [
+            'class' => 'backend\components\CenterComponent'
+        ],
         'user' => [
             'identityClass' => 'common\models\AdminModel',
             'enableAutoLogin' => true,
