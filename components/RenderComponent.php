@@ -18,15 +18,35 @@ use yii\base\Exception;
  *
  * Class RenderComponent
  * @package app\components
+ * @property $db
+ * @property $gameDb
+ * @property $limit
+ *
+ * @author YeBuFan
  */
 
 class RenderComponent extends Component
 {
 
+    /**
+     * 数据库连接
+     *
+     * @var db connection
+     */
     protected $db;
 
+    /**
+     * 游戏数据库连接
+     *
+     * @var db connection
+     */
     protected $gameDb;
 
+    /**
+     * 数据查询分页条数: 详见 $this->parseLimit
+     *
+     * @var int
+     */
     public $limit = 0;
 
     public function init()
@@ -41,24 +61,38 @@ class RenderComponent extends Component
      * 渲染 Load: select 注意字段大小写
      *
      * @param array $queryParams
+     *
+     * $queryParams = [
+     *
+     *  'className' => '\app\models\webadmin\ChannelPackage'  // or 'model' => '\app\models\webadmin\ChannelPackage'
+     *  'select' => 'id, name',   // default *
+     *  'param' => ['id' => 100], // will not use formName
+     *  'formName' => 'loadform', // or null
+     * ];
+     *
+     * @param bool $return
+     * @return array if $return is true
      */
-    public function renderLoad(array $queryParams)
+    public function renderLoad(array $queryParams, $return = false)
     {
         $model = ($queryParams['className'] ?? ($queryParams['model'] ?? ''));
         if ($model == '') $this->returnOK();
-        $param = Yii::$app->request->post(($queryParams['formName'] ?? 'form'));
-
+        $param = $queryParams['param'] ?? Yii::$app->request->post($queryParams['formName'] ?? null);
         $row = [];
-        if (!empty($param)) {
-            list($key, $value) = each($param);
-            // enable bind params to void sql inject , should set where like below
-            // where：condition = 'id=:id',  bindParam = [':id' => $id ]
-            $select = ($queryParams['select']) ?? '*';
-            $row = $model::find()->select($select)->where("{$key} = :{$key}", [":{$key}" => $value])->asArray()->one();
-        }
 
+        if (!empty($param)) {
+            $condition = $bindParams = [];
+            while (list($key, $value) = each($param)) {
+                $condition[] = "{$key} = :{$key}";
+                $bindParams[":{$key}"] = $value;
+            }
+            // enable bind params to void sql inject , should set where like below
+            // where：condition = 'id=:id',  bindParams = [':id' => $id ]
+            $select = ($queryParams['select']) ?? '*';
+            $row = $model::find()->select($select)->where(implode(' And ', $condition), $bindParams)->asArray()->one();
+        }
+        if ($return === true) return $row;
         $this->returnOK([
-            // 'column' => $model::attributeLabels(),
             'row' => $row
         ]);
     }
@@ -67,60 +101,75 @@ class RenderComponent extends Component
      * 渲染 Save
      *
      * @param array $queryParams
+     * @param bool $return
+     * @return mixed
      * @throws Exception
      */
-    public function renderSave(array $queryParams)
+    public function renderSave(array $queryParams, $return = false)
     {
         $param = Yii::$app->request->post($queryParams['formName']);
 
         if (!empty($param)) {
+            // validate form model
+            $this->validateFormModel($queryParams['formModel'], $param);
             $pk = $queryParams['className']::primaryKey();
+            $date = date('Y-m-d H:i:s');
+
             if ($pk != null && is_array($pk)) {
                 $pk_id = $pk[0];
                 // if set primary key and value then to update model.
-                if (!empty($pk_id) && !empty($param[$pk_id])) {
+                if (!empty($pk_id) && !empty($param[$pk_id]) ) {
                     $pk_value = $param[$pk_id];
                     $model = $queryParams['className']::find()->where("{$pk_id} = :{$pk_id}", [":{$pk_id}" => $pk_value])->one();
+
+                    if (!$model) throw new Exception("can not find model by {$pk_id} = $pk_value");
                 } // or add new record .
                 else {
                     $model = new $queryParams['className'] ();
+                    if ($model->hasAttribute('ctime')) $model->ctime = $date;
                 }
+                if ($model->hasAttribute('mtime')) $model->mtime = $date;
+
                 // save model .
-                if ($model->load($param, '') && $model->validate()) {
-                    if ( !$model->save()) {
-                        throw new Exception('save model failed !');
-                    }
+                $model->load($param, '');
+                if ($model->validate()) {
+                    if (!$model->save()) throw new Exception(json_encode($model->getErrors(), JSON_UNESCAPED_UNICODE));
+                    if ($return) return $model;
                 } else {
-                    throw new Exception(json_encode($model->getFirstErrors()));
+                    throw new Exception(json_encode($model->getFirstErrors(), JSON_UNESCAPED_UNICODE));
                 }
             }
         }
         else {
             throw new Exception("{$queryParams['formName']} params is empty !");
         }
-        $data = [];
-        $this->returnOK($data);
+        $this->returnOK();
     }
 
     /**
-     * 删除模型
+     * 删除模型: 物理删除 或 逻辑删除(表有is_deleted)
      *
-     * @param $pk           int or array
-     * @param $className    model class
+     * 没使用 deleteAll 是因为deleteAll不会触发 EVENT_BEFORE/AFTER_DELETE
+     *
+     * @param $pk           string      主键名称
+     * @param $className    model class 模型类
+     * @return bool
      */
     public function renderDelete($pk, $className)
     {
-        $pk_value = Yii::$app->request->post($pk);
-        $pk_value = (array) $pk_value;
-        if (!empty($pk_value))
-        {
-            foreach ($pk_value as $id){
-                $id = (int) $id;
-                $model = $className::findOne([$pk => $id]);
-                if ($model) $model->delete();
+        $pk_value = (array) (Yii::$app->request->post($pk));
+        if (empty($pk_value)) return false;
+
+        foreach ($pk_value as $id) {
+            $id = (int) $id;
+            if (null != ($model = $className::findOne([$pk => $id]))) {
+                if ($model->hasAttribute('is_deleted')) { // set is_deleted to 1 in table
+                    $model->is_deleted = 1;
+                    $model->save();
+                }
+                else $model->delete(); // delete record from table
             }
         }
-
         $this->returnOK();
     }
 
@@ -131,9 +180,10 @@ class RenderComponent extends Component
      * $params = [
      *  [
      *   'formName' => 'searchForm',
-     *   'db' => 'gameDb',
-     *   'query' => $query,
+     *   'db' => 'gameDb',          // default Yii::app->$db
+     *   'query' => $query,         // query object or sql statement
      *   'orderBy' => 'orderBy',
+     *   'groupBy' => '',
      *   'parseFormWhere' => false  // if set be false will not parse Form Where condition
      *   ],
      *   ......
@@ -141,73 +191,74 @@ class RenderComponent extends Component
      *
      * @param array $params
      * @param bool $page
-     * @param bool $return if return is true
-     * @return array
+     * @param bool $return if return is true data will be returned
+     * @param null $callback callable or \Closure: 对象方法 or 匿名函数, 对$rows变量的回调函数
+     *  $callback 参数应该使用引用传递
+     *
+     * @return mixed
      * @throws Exception
      */
-    public function renderSearch(array $params, $page = false, $return = false)
+    public function renderSearch(array $params, $page = false, $return = false, $callback = null)
     {
         $queryParams = $data = [];
-        // if is single one array
-        if(array_key_exists('query', $params)) {
-            $queryParams[] = $params;
-        }
-        // multi array
-        else {
-            $queryParams = $params;
-        }
+        // if is single one array or multi array
+        if (array_key_exists('query', $params)) $queryParams[] = $params;
+        else $queryParams = $params;
         // each query
-        foreach($queryParams as $key => $qparam)
+        foreach ($queryParams as $key => $qparam)
         {
-            $db = $qparam['db'] ?? $this->db;
             $query = $qparam['query'];
-            $formName = $qparam['formName'] ?? null;
-            $request = Yii::$app->request->post($formName);
-            $pagination = ['total' => 0];
-            $searchForm = [];
+            $db = !empty($query->modelClass) ? ($query->modelClass)::getDb() : ($qparam['db'] ?? $this->db);
+            $request = Yii::$app->request->post($qparam['formName'] ?? null);
+            $searchForm = (array) ($request['form'] ?? $request);
             // validate formModel
-            $formModel = $qparam['formModel'] ?? '';
-            if ($formModel && $request) $this->validateFormModel($formModel, $request);
-            if (!empty($request['form'])) {
-                $searchForm = $request['form'];
-            }
-            else {
-                if (!empty($request) && is_array($request)) $searchForm = $request ?? [];
-            }
-            // parse form where
-            $parseFormWhere = isset($qparam['parseFormWhere']) ? $qparam['parseFormWhere'] : true;
-            if ($parseFormWhere !== false) {
-                $where = $this->parseWhere($searchForm, $query);
-                if (!empty($where)) {
-                    $query->andWhere($where['condition'], $where['params']);
-                }
-            }
-            // limit
-            $total = (int) $query->count(0);
+            if (!empty($qparam['formModel'])) $this->validateFormModel($qparam['formModel'], $request);
+            $where = $this->parseWhere($searchForm, $query);
+            $offset = (int) ($searchForm['_offset'] ?? 0);
             $this->parseLimit($request);
-            // if set page
-            if ($page === true) {
-                $offset = (int) ($searchForm['_offset'] ?? 0);
-                $query->offset($offset);
-                $pagination = ['total' => $total, 'offset' => $offset, 'limit' => $this->limit];
+
+            // if is sql
+            if (is_string($query)) {
+                $cmd = $db->createCommand($query)->bindValues([':where' => ' 1=1 ' ]);
+                // set where: sql must be have ":where" placeholder
+                if (!empty($where)) {
+                    $query = str_replace(':where', $where['condition'], $query);
+                    $cmd = $db->createCommand($query)->bindValues($where['params']);
+                }
+                $total = $db->createCommand("Select count(0) From (". $cmd->getRawSql() .") A ")->queryScalar();
+                if ($page === true) $pagination = ['total' => $total, 'offset' => $offset, 'limit' => $this->limit];
+                $query = $cmd->getRawSql() . " limit {$offset}, {$this->limit} ";
+                $rows = $db->createCommand($query)->queryAll();
             }
-            $query->limit($this->limit);
-            // if set order by
-            $orderBy = (!empty($qparam['orderBy']) ? $qparam['orderBy'] : ($request['orderBy'] ?? ''));
-            if ($orderBy) $query->orderBy($orderBy);
-            // if active model convert as Array
-            if ($query instanceof yii\db\ActiveQuery) $query->asArray();
-            // search all results
-            $rows = $query->all($db);
-            // data array
+            // else is instance yii\db\Query
+            else {
+                if (!empty($where)) $query->andWhere($where['condition'], $where['params']);
+                $total = (int) $query->count(0);
+                if ($page === true) {
+                    $query->offset($offset);
+                    $pagination = ['total' => $total, 'offset' => $offset, 'limit' => $this->limit];
+                }
+                $query->limit($this->limit);
+                // if set order by,  group by
+                $orderBy = (!empty($qparam['orderBy']) ? $qparam['orderBy'] : ($request['orderBy'] ?? ''));
+                if ($orderBy) $query->orderBy($orderBy);
+                if (!empty($qparam['groupBy'])) $query->groupBy($qparam['groupBy']);
+                if ($query instanceof yii\db\ActiveQuery) $query->asArray();
+                // search all results
+                $rows = $query->all($db);
+            }
+            // callback to process rows, reference passed
+            if ($callback !== null){
+                if (is_array($callback) && is_callable($callback) ) call_user_func_array($callback, [&$rows]);
+                if ($callback instanceof \Closure) $callback($rows);
+            }
             $data['table' . (int) ($key + 1)] = [
                 'rows' => $rows,
                 'total' => $total,
-                'pagination' => $pagination,
+                'pagination' => $pagination ?? ['total' => 0],
             ];
             // todo : export table data
         }
-
         if ($return) return $data;
         // render data to client
         $this->returnOK($data);
@@ -218,21 +269,19 @@ class RenderComponent extends Component
      *
      * @param $formModel
      * @param $params
-     * @return string
+     * @return bool
      * @throws Exception
      */
     protected function validateFormModel($formModel, $params)
     {
-        if ($formModel == '' || $params == '') return '';
         $model = new $formModel;
         // model validate
-        if (!empty($params)) {
-            if ($model->load($params, '') && $model->validate()) {
-
-            } else {
-                throw new Exception(json_encode($model->getFirstErrors()));
-            }
+        $model->load($params, '');
+        if ( !$model->validate()) {
+            throw new Exception(json_encode($model->getFirstErrors(), JSON_UNESCAPED_UNICODE));
         }
+
+        return true;
     }
 
     /**
@@ -315,7 +364,7 @@ class RenderComponent extends Component
                         $where['params'][":{$key}"] = $value;
                     }
                 }
-                // drop down list select value
+                // drop down list select value:
                 else if ($end_value === true){
                     // limit: assign its value in vii config file stands for top N
                     if ($key === 'limit_value') {
@@ -355,14 +404,17 @@ class RenderComponent extends Component
             }
         }
         if (!empty($where['condition'])) {
-            // var_dump($where); die('where1');
             $where = $this->filterWhere($where, $query);
             $where['condition'] = implode(" And ", $where['condition'] );
         }
-        //var_dump($where); die('where2');
         return $where;
     }
 
+    public static $allowOperator = [
+        'in',
+        'like',
+        '='
+    ];
 
     public static $endsReplace = [
         '__min', '__max',
@@ -421,107 +473,6 @@ class RenderComponent extends Component
         }
 
         return $value;
-    }
-    public static $allowOperator = [
-        'in',
-        'like',
-        '='
-    ];
-    public static $sqlOperator = [
-        'delete',
-        'update',
-        'drop',
-        'alter',
-        'add'
-    ];
-
-    /**
-     * 查询 KindID 对应游戏名称： 附加在 sql select 后
-     *
-     * @return string
-     */
-    public function queryKindField()
-    {
-        $kind = Yii::$app->params['kind'];
-        if (!$kind) return '';
-        $queryString = " , ( Case ";
-        foreach ($kind as $key=>$val)
-        {
-            $queryString .= " When KindID={$key} Then '$val'  ";
-        }
-        $queryString .= " END ) As kind ";
-
-        return $queryString;
-    }
-
-    /**
-     * 查询 C_Type 对应金币变化事件名称： 附加在 sql select 后
-     *
-     * @return string
-     */
-    public function queryGoldChangeTypeField()
-    {
-        $kind = Yii::$app->params['goldChangeType'];
-        if (!$kind) return '';
-        $queryString = " , ( Case ";
-        foreach ($kind as $key=>$val)
-        {
-            $queryString .= " When C_Type={$key} Then '$val'  ";
-        }
-        $queryString .= " END ) As changeType ";
-
-        return $queryString;
-    }
-
-    public function queryCirculateTypeField()
-    {
-        $kind = Yii::$app->params['circulateType'];
-        if (!$kind) return '';
-        $queryString = " , ( Case ";
-        foreach ($kind as $key=>$val)
-        {
-            $queryString .= " When circulate_type={$key} Then '$val'  ";
-        }
-        $queryString .= " END ) As circulate_type ";
-
-        return $queryString;
-    }
-
-    /**
-     * 查询 根据金币变化判断输赢： 附加在 sql select 后
-     *
-     * @return string
-     */
-    public function queryWinloseTypeField()
-    {
-        $queryString = " , ( Case 
-                When ChangeGold > 0 Then '赢'
-                When ChangeGold < 0 Then '输'
-                When ChangeGold = 0 Then '平局'
-            Else ''
-        End) As winlose_type ";
-
-        return $queryString;
-    }
-
-    /**
-     * 返回配置文件定义字段值对应中文意义： 附加在 select 后
-     *
-     * @param $field    表字段
-     * @return string   case when then sql
-     */
-    public function queryMeaningField($field)
-    {
-        $define = (Yii::$app->params[$field]) ?? [];
-        if (!$define) return '';
-        $queryString = " , ( Case ";
-        foreach ($define as $key=>$val)
-        {
-            $queryString .= " When {$field}={$key} Then '$val'  ";
-        }
-        $queryString .= " END ) As $field ";
-
-        return $queryString;
     }
 
     // ----------------------------------------------------------------------------------------------------------------
