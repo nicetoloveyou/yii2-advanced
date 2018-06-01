@@ -113,7 +113,6 @@ class RenderComponent extends Component
             // validate form model
             $this->validateFormModel($queryParams['formModel'], $param);
             $pk = $queryParams['className']::primaryKey();
-            $date = date('Y-m-d H:i:s');
 
             if ($pk != null && is_array($pk)) {
                 $pk_id = $pk[0];
@@ -126,18 +125,12 @@ class RenderComponent extends Component
                 } // or add new record .
                 else {
                     $model = new $queryParams['className'] ();
-                    if ($model->hasAttribute('ctime')) $model->ctime = $date;
                 }
-                if ($model->hasAttribute('mtime')) $model->mtime = $date;
 
                 // save model .
                 $model->load($param, '');
-                if ($model->validate()) {
-                    if (!$model->save()) throw new Exception(json_encode($model->getErrors(), JSON_UNESCAPED_UNICODE));
-                    if ($return) return $model;
-                } else {
-                    throw new Exception(json_encode($model->getFirstErrors(), JSON_UNESCAPED_UNICODE));
-                }
+                if (!$model->save(true)) throw new Exception(json_encode($model->getErrors(), JSON_UNESCAPED_UNICODE));
+                if ($return) return $model;
             }
         }
         else {
@@ -186,6 +179,7 @@ class RenderComponent extends Component
      *   'groupBy' => '',
      *   'parseFormWhere' => false  // if set be false will not parse Form Where condition
      *   ],
+     *
      *   ......
      *  ];
      *

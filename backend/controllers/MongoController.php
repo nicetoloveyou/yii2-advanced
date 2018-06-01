@@ -49,30 +49,22 @@ class MongoController extends Controller
 
     public function actionTest()
     {
-        $model = new TotalForm;
+//        $sql = "Select * from admin Where username !='' And :where limit 10";
+//        $cmd = Yii::$app->db->createCommand($sql);
+//        //$cmd->bindParam(':where', $where);
+//        $cmd->bindValues([':where' => ' 1=1 ']);
+//
+//        $sql = str_replace(':where', ' id=:id ', $sql);
+//        $cmd = Yii::$app->db->createCommand($sql);
+//        $cmd->bindValues([':id' => 1 ]);
+//
+//        $data = $cmd->queryAll();
+//        var_dump($cmd->getRawSql());
 
-        $params = [
-            'platform_id' => [
-                1 => '1000333',
-                2 => '22222222',
-                'all' => 'A'
-            ],
-            'platform_id_value' => 2
-        ];
+//       $model = \backend\models\Admin::find()->where();
+//        var_dump($model);
 
-        if ($model->load($params, '')) {
-            //var_dump($model->platform_id);
-            //die();
-            if (! $model->validate()) {
-                var_dump($model->getErrors());
-            }
-            exit('yes');
-        }
-        else {
-            var_dump($model->getErrors());
-        }
 
-        exit('aaaaa');
     }
 
 
