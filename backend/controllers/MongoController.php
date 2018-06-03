@@ -15,6 +15,9 @@ use helpers\Helper;
 use backend\models\AuthItem;
 use yii\mongodb\Connection;
 use backend\models\TotalForm;
+use backend\components\SearchModel;
+use yii\db\Query;
+
 
 class MongoController extends Controller
 {
@@ -49,25 +52,34 @@ class MongoController extends Controller
 
     public function actionTest()
     {
-//        $sql = "Select * from admin Where username !='' And :where limit 10";
-//        $cmd = Yii::$app->db->createCommand($sql);
-//        //$cmd->bindParam(':where', $where);
-//        $cmd->bindValues([':where' => ' 1=1 ']);
-//
-//        $sql = str_replace(':where', ' id=:id ', $sql);
-//        $cmd = Yii::$app->db->createCommand($sql);
-//        $cmd->bindValues([':id' => 1 ]);
-//
-//        $data = $cmd->queryAll();
-//        var_dump($cmd->getRawSql());
-
-//       $model = \backend\models\Admin::find()->where();
-//        var_dump($model);
-
-
+        Yii::$app->center->callback = 9999999;
+        var_dump(Yii::$app->center);
+        die();
+        $cc = 1000;
+        $func = function($d) use ($cc) {
+            var_dump($d, $cc);
+        };
+        if($func instanceof  \Closure) {
+            $func('hhhhhh');
+        }
     }
 
+    public function actionTest2()
+    {
+        $model = new SearchModel;
 
+        $attribute = [
+            //'query' => new Query,
+            'where' => ' 1=1 ',
+            'orderBy' => ' id Desc ',
+            'groupBy' => ' stdate ',
+            'limit' => 10,
+        ];
+        //$load = $model->load($attribute, '');
+        $model->setAttributes($attribute, false);
+
+        var_dump($model);
+    }
 
 
 

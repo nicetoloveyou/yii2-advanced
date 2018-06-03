@@ -14,6 +14,11 @@ use yii\base\Component;
 class CenterComponent extends Component
 {
 
+    public $callback;
+
+    public $call;
+
+
     /**
      * hello function
      *

@@ -58,11 +58,12 @@ class AutoController extends \yii\console\Controller
 
     public function actionProgress()
     {
-        Console::startProgress(0, 1000);
-        for ($n = 1; $n <= 1000; $n++)
+        Console::startProgress(0, 100);
+
+        for ($n = 1; $n <= 100; $n++)
         {
-            usleep(1000);
-            Console::updateProgress($n, 1000);
+            // usleep(1000);
+            Console::updateProgress($n, 100);
         }
         Console::endProgress();
     }
@@ -123,17 +124,20 @@ class AutoController extends \yii\console\Controller
 //        //echo Yii::getVersion();
 //        var_dump($comment); die();
 
-
-
         //$dsn = 'mongodb://root:root@localhost:27017/admin';
         //$connection = new Connection(['dsn' => $dsn]);
         //var_dump($connection);die();
         //$result = $connection->getDatabase('admin')->getCollection('articles')->findOne();
+//        Yii::beginProfile('begin mongodb get article');
+//        $result = Yii::$app->mongodb->getDatabase('admin')->getCollection('articles')->findOne();
+//        Yii::beginProfile('begin mongodb get article');
+//
+//        var_dump($result);
 
-        $result = Yii::$app->mongodb->getDatabase('admin')->getCollection('articles')->findOne();
+        $d = 100;
+        $arr = ['a', 'b', 'c' ];
 
-
-        var_dump($result);
+        var_dump($arr);
 
         // ok
 
