@@ -67,7 +67,6 @@ class MongoController extends Controller
     public function actionTest2()
     {
         $model = new SearchModel;
-
         $attribute = [
             //'query' => new Query,
             'where' => ' 1=1 ',
@@ -77,10 +76,16 @@ class MongoController extends Controller
         ];
         //$load = $model->load($attribute, '');
         $model->setAttributes($attribute, false);
-
         var_dump($model);
     }
 
+
+    public function actionTest3()
+    {
+        //ArrayIterator
+
+         //ArrayIterator;
+    }
 
 
 

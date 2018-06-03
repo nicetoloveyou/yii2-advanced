@@ -29,4 +29,10 @@ class SearchModel extends Model
         return [];
     }
 
+    public function behaviors()
+    {
+        return parent::behaviors();
+    }
+
+
 }

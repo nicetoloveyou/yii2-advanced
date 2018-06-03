@@ -156,6 +156,13 @@ class ArraytestController extends yii\web\Controller
     }
 
 
+    public function actionArrobj()
+    {
+        $arr = [1, 2, 3, 4, 7, 9, 15];
+        $obj = new \ArrayObject($arr);
+
+        var_dump($arr);
+    }
 
 
 
