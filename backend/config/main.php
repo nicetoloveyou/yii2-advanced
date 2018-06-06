@@ -23,6 +23,10 @@ return [
         ],
     ],
     'components' => [
+//        'response' => [
+//            'class' => 'yii\web\response',
+//            'format' => yii\web\Response::FORMAT_JSON,
+//        ],
         'center' => [
             'class' => 'backend\components\CenterComponent'
         ],

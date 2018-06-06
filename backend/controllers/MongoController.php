@@ -82,9 +82,23 @@ class MongoController extends Controller
 
     public function actionTest3()
     {
-        //ArrayIterator
+        $rows = [
+            ['a' => 1, 'b'=> 2, 'c' => 3],
+            //'d' =>['1111']  // 非索引数组, json 会转换成 对象json
+        ];
+        $rows = array_merge($rows, [['a' => 5, 'b'=> 7, 'e' => 511]]);
 
-         //ArrayIterator;
+        $data = [
+           'table1' => [
+               'rows' => $rows
+           ],
+       ];
+        //Yii::$app->response->data = $data;
+        //Yii::$app->response->send();
+
+        //return $data;
+
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
 
